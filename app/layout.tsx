@@ -12,6 +12,10 @@ export const metadata: Metadata = {
   title: 'AILine — AI Study Planner for Saudi University Students',
   description:
     'Turn your class schedule into a personalized AI-generated study plan in Arabic or English — in under 60 seconds. Launching soon by HuloolFuture.',
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
   robots: {
     index: false,
     follow: false,
@@ -23,12 +27,21 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     siteName: 'AILine by HuloolFuture',
+    images: [
+      {
+        url: '/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'AILine by HuloolFuture',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'AILine — AI Study Planner · Launching Soon',
     description:
       'Turn your class schedule into a personalized AI study plan in under 60 seconds. Built for Saudi university students.',
+    images: ['/logo.png'],
   },
 }
 
