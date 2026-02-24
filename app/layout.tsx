@@ -9,6 +9,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://huloolfuture.sa'),
   title: 'AILine — AI Study Planner for Saudi University Students',
   description:
     'Turn your class schedule into a personalized AI-generated study plan in Arabic or English — in under 60 seconds. Launching soon by HuloolFuture.',

@@ -51,29 +51,13 @@ export function NotifyForm() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="your@email.com"
-        className="h-12 flex-1 rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder-zinc-500 outline-none transition-colors focus:border-indigo-500/60 focus:bg-white/8 focus:ring-0"
+        className="email-input h-12 flex-1 rounded-xl px-4 text-sm outline-none transition"
       />
       <button
         type="submit"
         disabled={loading}
-        className="relative h-12 overflow-hidden rounded-xl px-6 text-sm font-medium text-white transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-70"
-        style={{
-          background:
-            'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #6366f1 100%)',
-          backgroundSize: '200% 200%',
-          animation: 'gradient-flow 3s ease infinite',
-        }}
+        className="notify-btn relative h-12 overflow-hidden rounded-xl px-6 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {/* Shimmer sweep */}
-        <span
-          className="pointer-events-none absolute inset-0"
-          aria-hidden="true"
-          style={{
-            background:
-              'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%)',
-            animation: 'shimmer-sweep 3s ease-in-out infinite',
-          }}
-        />
         <span className="relative">
           {loading ? (
             <span className="flex items-center gap-2">
