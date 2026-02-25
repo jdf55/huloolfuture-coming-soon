@@ -21,8 +21,13 @@ export function NotifyForm() {
   if (submitted) {
     return (
       <div
-        className="flex items-center justify-center gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-6 py-4 text-sm text-emerald-400"
-        style={{ animation: 'fade-up 0.5s ease-out both' }}
+        className="flex items-center justify-center gap-2.5 rounded-xl border px-6 py-4 text-sm font-medium"
+        style={{
+          animation: 'fade-up 0.5s ease-out both',
+          borderColor: 'var(--success-border)',
+          background: 'var(--success-soft)',
+          color: 'var(--success)',
+        }}
       >
         <svg
           className="h-4 w-4 shrink-0"
@@ -56,7 +61,7 @@ export function NotifyForm() {
       <button
         type="submit"
         disabled={loading}
-        className="notify-btn relative h-12 overflow-hidden rounded-xl px-6 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-70"
+        className="notify-btn on-primary relative h-12 overflow-hidden rounded-xl px-6 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-70"
       >
         <span className="relative">
           {loading ? (

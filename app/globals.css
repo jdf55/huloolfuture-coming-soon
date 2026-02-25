@@ -10,75 +10,269 @@
   padding: 0;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN TOKENS
+   ─────────────────────────────────────────────────────────────
+   Neutrals ......... HSL   (legible, easy grays and off-whites)
+   Chromatic ........ OKLCH (perceptually uniform — accent, etc.)
+   Shadows .......... full box-shadow shorthand via --shadow-*
+   Gradient stops ... --bg-start / --bg-mid / --bg-end
+
+   Theming:
+     Class-based  →  body.dark-theme  /  body.light-theme
+     System pref  →  @media (prefers-color-scheme: dark) fallback
+   The class selectors (specificity 0-1-1) always beat :root
+   (specificity 0-1-0), so the toggle will just add/remove a
+   body class without touching any component styles.
+═══════════════════════════════════════════════════════════════ */
+
+/* ─── Light theme (default) ─────────────────────────────────── */
 :root {
-  --bg: #f4f5ef;
-  --bg-elevated: rgba(244, 245, 239, 0.84);
-  --surface: rgba(255, 255, 255, 0.82);
-  --surface-solid: #ffffff;
-  --surface-muted: rgba(255, 255, 255, 0.64);
+  /* Background */
+  --bg:               hsl(72 18% 96%);
+  --bg-elevated:      hsl(72 18% 96% / 0.88);
+  --bg-start:         hsl(72 20% 97%);
+  --bg-mid:           hsl(72 18% 96%);
+  --bg-end:           hsl(78 16% 95%);
 
-  --text-strong: #101828;
-  --text-main: #253142;
-  --text-muted: #5f6c7b;
-  --text-soft: #7f8997;
+  /* Surface */
+  --surface:          hsl(0 0% 100% / 0.82);
+  --surface-solid:    hsl(0 0% 100%);
+  --surface-muted:    hsl(0 0% 100% / 0.64);
 
-  --border: rgba(16, 24, 40, 0.13);
-  --line: rgba(16, 24, 40, 0.13);
-  --grid-dot: rgba(16, 24, 40, 0.24);
+  /* Text */
+  --text-strong:      hsl(221 47% 12%);         /* #101828 */
+  --text-main:        hsl(213 34% 20%);         /* #253142 */
+  --text-muted:       hsl(210 14% 42%);         /* #5f6c7b */
+  --text-soft:        hsl(210 10% 55%);         /* #7f8997 */
 
-  --accent-rgb: 13, 148, 136;
-  --accent: #0d9488;
-  --accent-strong: #0f766e;
-  --accent-end: #115e59;
-  --accent-soft: rgba(13, 148, 136, 0.14);
+  /* Border / line */
+  --border:           hsl(221 47% 12% / 0.16);
+  --line:             hsl(221 47% 12% / 0.16);
+  --grid-dot:         hsl(221 47% 12% / 0.24);
 
-  --premium-rgb: 202, 138, 4;
-  --premium: #ca8a04;
-  --premium-soft: rgba(202, 138, 4, 0.17);
+  /* Accent — teal */
+  --accent:           oklch(0.596 0.126 183);   /* #0d9488 */
+  --accent-strong:    oklch(0.508 0.105 184);   /* #0f766e */
+  --accent-end:       oklch(0.422 0.085 185);   /* #115e59 */
+  --accent-soft:      oklch(0.596 0.126 183 / 0.14);
+  --accent-rgb:       13, 148, 136;             /* rgba() compat for radial gradients */
 
-  --success: #047857;
-  --success-soft: rgba(4, 120, 87, 0.12);
-  --success-border: rgba(4, 120, 87, 0.3);
+  /* Premium — amber */
+  --premium:          oklch(0.637 0.162 76);    /* #ca8a04 */
+  --premium-soft:     oklch(0.637 0.162 76 / 0.17);
+  --premium-rgb:      202, 138, 4;              /* rgba() compat for radial gradients */
 
-  --orb-1: rgba(13, 148, 136, 0.13);
-  --orb-2: rgba(202, 138, 4, 0.12);
+  /* Semantic states */
+  --success:          oklch(0.484 0.131 164);   /* #047857 */
+  --success-soft:     oklch(0.484 0.131 164 / 0.12);
+  --success-border:   oklch(0.484 0.131 164 / 0.30);
+
+  /* Ambient orbs */
+  --orb-1:            oklch(0.596 0.126 183 / 0.04);
+  --orb-2:            oklch(0.637 0.162 76  / 0.03);
+
+  /* Shadows — full box-shadow shorthand */
+  --shadow-card:      0 14px 30px -24px hsl(221 47% 12% / 0.28);
+  --shadow-cta:       0 18px 36px -28px hsl(221 47% 12% / 0.34);
+  --shadow-toggle:    0 1px 3px hsl(221 47% 12% / 0.12);
+
+  /* Feature icon tones (light) */
+  --feat-icon-0-bg:   oklch(0.979 0.021 166);    /* ≈ emerald-50  */
+  --feat-icon-0:      oklch(0.490 0.120 165);    /* ≈ emerald-700 */
+  --feat-icon-1-bg:   oklch(0.984 0.014 180);    /* ≈ teal-50     */
+  --feat-icon-1:      oklch(0.488 0.104 184);    /* ≈ teal-700    */
+  --feat-icon-2-bg:   oklch(0.991 0.018 90);     /* ≈ amber-50    */
+  --feat-icon-2:      oklch(0.558 0.158 51);     /* ≈ amber-700   */
+  --feat-icon-3-bg:   oklch(0.968 0.005 253);    /* ≈ slate-100   */
+  --feat-icon-3:      oklch(0.376 0.030 258);    /* ≈ slate-700   */
+
+  /* Watermark */
+  --watermark:        oklch(0.245 0.050 258 / 0.03);
+
+  /* On-primary (text on accent-gradient buttons) */
+  --on-primary:       hsl(220 48% 10%);
 }
 
+/* ─── Dark theme — class-based ──────────────────────────────── */
+/*   Applied by JS on body when prefers-color-scheme: dark, or   */
+/*   by a future theme toggle. Overrides :root via specificity.  */
+body.dark-theme {
+  /* Background */
+  --bg:               hsl(220 45% 8%);
+  --bg-elevated:      hsl(220 45% 8% / 0.82);
+  --bg-start:         hsl(220 47% 9%);
+  --bg-mid:           hsl(220 45% 8%);
+  --bg-end:           hsl(220 42% 7%);
+
+  /* Surface */
+  --surface:          hsl(218 46% 10% / 0.72);
+  --surface-solid:    hsl(218 46% 10%);         /* #0e1623 */
+  --surface-muted:    hsl(219 40% 11% / 0.58);
+
+  /* Text */
+  --text-strong:      hsl(220 43% 97%);         /* #f5f7fb */
+  --text-main:        hsl(220 38% 90%);         /* #dde4ef */
+  --text-muted:       hsl(213 14% 68%);         /* #9eaaba */
+  --text-soft:        hsl(213 11% 55%);         /* #7b8898 */
+
+  /* Border / line */
+  --border:           hsl(210 20% 72% / 0.22);
+  --line:             hsl(210 20% 72% / 0.22);
+  --grid-dot:         hsl(213 29% 89% / 0.32);
+
+  /* Accent — bright teal */
+  --accent:           oklch(0.793 0.113 181);   /* #2dd4bf */
+  --accent-strong:    oklch(0.700 0.120 182);   /* #14b8a6 */
+  --accent-end:       oklch(0.508 0.105 184);   /* #0f766e */
+  --accent-soft:      oklch(0.793 0.113 181 / 0.20);
+  --accent-rgb:       45, 212, 191;
+
+  /* Premium — bright amber */
+  --premium:          oklch(0.835 0.161 81);    /* #fbbf24 */
+  --premium-soft:     oklch(0.835 0.161 81 / 0.20);
+  --premium-rgb:      251, 191, 36;
+
+  /* Semantic states */
+  --success:          oklch(0.793 0.140 162);   /* #34d399 */
+  --success-soft:     oklch(0.793 0.140 162 / 0.14);
+  --success-border:   oklch(0.793 0.140 162 / 0.32);
+
+  /* Ambient orbs */
+  --orb-1:            oklch(0.700 0.120 182 / 0.07);
+  --orb-2:            oklch(0.835 0.161 81  / 0.05);
+
+  /* Shadows */
+  --shadow-card:      0 16px 34px -24px hsl(220 54% 3% / 0.54);
+  --shadow-cta:       0 18px 38px -26px hsl(220 54% 3% / 0.60);
+  --shadow-toggle:    0 1px 3px hsl(220 54% 2% / 0.48);
+
+  /* Feature icon tones (dark) */
+  --feat-icon-0-bg:   oklch(0.490 0.120 165 / 0.15); /* emerald-500/15 */
+  --feat-icon-0:      oklch(0.844 0.110 164);         /* ≈ emerald-300  */
+  --feat-icon-1-bg:   oklch(0.488 0.104 184 / 0.15); /* teal-500/15    */
+  --feat-icon-1:      oklch(0.862 0.110 183);         /* ≈ teal-300     */
+  --feat-icon-2-bg:   oklch(0.769 0.162 72  / 0.15); /* amber-500/15   */
+  --feat-icon-2:      oklch(0.886 0.126 87);          /* ≈ amber-300    */
+  --feat-icon-3-bg:   oklch(0.710 0.020 258 / 0.15); /* slate-400/15   */
+  --feat-icon-3:      oklch(0.938 0.009 253);         /* ≈ slate-200    */
+
+  /* Watermark */
+  --watermark:        oklch(1 0 0 / 0.03);
+
+  /* On-primary */
+  --on-primary:       hsl(220 48% 10%);
+}
+
+/* ─── Light lock — prevents system dark from overriding ─────── */
+/*   Set body.light-theme to force light even on a dark system.  */
+body.light-theme {
+  --bg:               hsl(72 18% 96%);
+  --bg-elevated:      hsl(72 18% 96% / 0.88);
+  --bg-start:         hsl(72 20% 97%);
+  --bg-mid:           hsl(72 18% 96%);
+  --bg-end:           hsl(78 16% 95%);
+  --surface:          hsl(0 0% 100% / 0.82);
+  --surface-solid:    hsl(0 0% 100%);
+  --surface-muted:    hsl(0 0% 100% / 0.64);
+  --text-strong:      hsl(221 47% 12%);
+  --text-main:        hsl(213 34% 20%);
+  --text-muted:       hsl(210 14% 42%);
+  --text-soft:        hsl(210 10% 55%);
+  --border:           hsl(221 47% 12% / 0.16);
+  --line:             hsl(221 47% 12% / 0.16);
+  --grid-dot:         hsl(221 47% 12% / 0.24);
+  --accent:           oklch(0.596 0.126 183);
+  --accent-strong:    oklch(0.508 0.105 184);
+  --accent-end:       oklch(0.422 0.085 185);
+  --accent-soft:      oklch(0.596 0.126 183 / 0.14);
+  --accent-rgb:       13, 148, 136;
+  --premium:          oklch(0.637 0.162 76);
+  --premium-soft:     oklch(0.637 0.162 76 / 0.17);
+  --premium-rgb:      202, 138, 4;
+  --success:          oklch(0.484 0.131 164);
+  --success-soft:     oklch(0.484 0.131 164 / 0.12);
+  --success-border:   oklch(0.484 0.131 164 / 0.30);
+  --orb-1:            oklch(0.596 0.126 183 / 0.04);
+  --orb-2:            oklch(0.637 0.162 76  / 0.03);
+  --shadow-card:      0 14px 30px -24px hsl(221 47% 12% / 0.28);
+  --shadow-cta:       0 18px 36px -28px hsl(221 47% 12% / 0.34);
+  --shadow-toggle:    0 1px 3px hsl(221 47% 12% / 0.12);
+
+  /* Feature icon tones (light) */
+  --feat-icon-0-bg:   oklch(0.979 0.021 166);
+  --feat-icon-0:      oklch(0.490 0.120 165);
+  --feat-icon-1-bg:   oklch(0.984 0.014 180);
+  --feat-icon-1:      oklch(0.488 0.104 184);
+  --feat-icon-2-bg:   oklch(0.991 0.018 90);
+  --feat-icon-2:      oklch(0.558 0.158 51);
+  --feat-icon-3-bg:   oklch(0.968 0.005 253);
+  --feat-icon-3:      oklch(0.376 0.030 258);
+
+  /* Watermark */
+  --watermark:        oklch(0.245 0.050 258 / 0.03);
+
+  /* On-primary */
+  --on-primary:       hsl(220 48% 10%);
+}
+
+/* ─── System dark preference fallback (no class set) ─────────── */
+/*   Keeps prefers-color-scheme working before a toggle is added. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #060b13;
-    --bg-elevated: rgba(6, 11, 19, 0.78);
-    --surface: rgba(16, 22, 33, 0.72);
-    --surface-solid: #0e1623;
-    --surface-muted: rgba(18, 26, 38, 0.58);
+    --bg:               hsl(220 45% 8%);
+    --bg-elevated:      hsl(220 45% 8% / 0.82);
+    --bg-start:         hsl(220 47% 9%);
+    --bg-mid:           hsl(220 45% 8%);
+    --bg-end:           hsl(220 42% 7%);
+    --surface:          hsl(218 46% 10% / 0.72);
+    --surface-solid:    hsl(218 46% 10%);
+    --surface-muted:    hsl(219 40% 11% / 0.58);
+    --text-strong:      hsl(220 43% 97%);
+    --text-main:        hsl(220 38% 90%);
+    --text-muted:       hsl(213 14% 68%);
+    --text-soft:        hsl(213 11% 55%);
+    --border:           hsl(210 20% 72% / 0.22);
+    --line:             hsl(210 20% 72% / 0.22);
+    --grid-dot:         hsl(213 29% 89% / 0.32);
+    --accent:           oklch(0.793 0.113 181);
+    --accent-strong:    oklch(0.700 0.120 182);
+    --accent-end:       oklch(0.508 0.105 184);
+    --accent-soft:      oklch(0.793 0.113 181 / 0.20);
+    --accent-rgb:       45, 212, 191;
+    --premium:          oklch(0.835 0.161 81);
+    --premium-soft:     oklch(0.835 0.161 81 / 0.20);
+    --premium-rgb:      251, 191, 36;
+    --success:          oklch(0.793 0.140 162);
+    --success-soft:     oklch(0.793 0.140 162 / 0.14);
+    --success-border:   oklch(0.793 0.140 162 / 0.32);
+    --orb-1:            oklch(0.700 0.120 182 / 0.07);
+    --orb-2:            oklch(0.835 0.161 81  / 0.05);
+    --shadow-card:      0 16px 34px -24px hsl(220 54% 3% / 0.54);
+    --shadow-cta:       0 18px 38px -26px hsl(220 54% 3% / 0.60);
+    --shadow-toggle:    0 1px 3px hsl(220 54% 2% / 0.48);
 
-    --text-strong: #f5f7fb;
-    --text-main: #dde4ef;
-    --text-muted: #9eaaba;
-    --text-soft: #7b8898;
+    /* Feature icon tones (dark) */
+    --feat-icon-0-bg:   oklch(0.490 0.120 165 / 0.15);
+    --feat-icon-0:      oklch(0.844 0.110 164);
+    --feat-icon-1-bg:   oklch(0.488 0.104 184 / 0.15);
+    --feat-icon-1:      oklch(0.862 0.110 183);
+    --feat-icon-2-bg:   oklch(0.769 0.162 72  / 0.15);
+    --feat-icon-2:      oklch(0.886 0.126 87);
+    --feat-icon-3-bg:   oklch(0.710 0.020 258 / 0.15);
+    --feat-icon-3:      oklch(0.938 0.009 253);
 
-    --border: rgba(148, 163, 184, 0.24);
-    --line: rgba(148, 163, 184, 0.24);
-    --grid-dot: rgba(226, 232, 240, 0.36);
+    /* Watermark */
+    --watermark:        oklch(1 0 0 / 0.03);
 
-    --accent-rgb: 45, 212, 191;
-    --accent: #2dd4bf;
-    --accent-strong: #14b8a6;
-    --accent-end: #0f766e;
-    --accent-soft: rgba(45, 212, 191, 0.2);
-
-    --premium-rgb: 251, 191, 36;
-    --premium: #fbbf24;
-    --premium-soft: rgba(251, 191, 36, 0.2);
-
-    --success: #34d399;
-    --success-soft: rgba(52, 211, 153, 0.14);
-    --success-border: rgba(52, 211, 153, 0.32);
-
-    --orb-1: rgba(20, 184, 166, 0.2);
-    --orb-2: rgba(251, 191, 36, 0.16);
+    /* On-primary */
+    --on-primary:       hsl(220 48% 10%);
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE
+═══════════════════════════════════════════════════════════════ */
 
 html,
 body {
@@ -92,48 +286,68 @@ body {
   color: var(--text-main);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   LAYOUT COMPONENTS
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Page background with ambient orbs ── */
 .theme-root {
   background-color: var(--bg);
   background-image:
-    radial-gradient(1200px circle at 4% 0%, rgba(var(--accent-rgb), 0.09) 0%, transparent 52%),
-    radial-gradient(980px circle at 100% 18%, rgba(var(--premium-rgb), 0.08) 0%, transparent 48%),
-    linear-gradient(180deg, #f9faf6 0%, #f4f6f2 42%, #eef2f1 100%);
+    radial-gradient(960px circle at 0% 0%, rgba(var(--accent-rgb), 0.06) 0%, transparent 58%),
+    radial-gradient(840px circle at 100% 12%, rgba(var(--premium-rgb), 0.05) 0%, transparent 56%);
   background-repeat: no-repeat;
 }
 
 @media (max-width: 640px) {
   .theme-root {
     background-image:
-      radial-gradient(560px circle at 0% 0%, rgba(var(--accent-rgb), 0.08) 0%, transparent 55%),
-      radial-gradient(520px circle at 100% 18%, rgba(var(--premium-rgb), 0.07) 0%, transparent 52%),
-      linear-gradient(180deg, #f9faf6 0%, #f4f6f2 54%, #eef2f1 100%);
+      radial-gradient(420px circle at 0% 0%, rgba(var(--accent-rgb), 0.05) 0%, transparent 60%),
+      radial-gradient(360px circle at 100% 16%, rgba(var(--premium-rgb), 0.04) 0%, transparent 58%);
   }
 }
 
+/* Dark: stronger orb glow + adjusted geometry */
 @media (prefers-color-scheme: dark) {
   .theme-root {
-    background-color: var(--bg);
     background-image:
-      radial-gradient(1150px circle at 6% 0%, rgba(var(--accent-rgb), 0.18) 0%, transparent 52%),
-      radial-gradient(980px circle at 100% 22%, rgba(var(--premium-rgb), 0.14) 0%, transparent 48%),
-      linear-gradient(180deg, #070d17 0%, #060b13 42%, #050a11 100%);
+      radial-gradient(960px circle at 0% 0%, rgba(var(--accent-rgb), 0.11) 0%, transparent 58%),
+      radial-gradient(860px circle at 100% 14%, rgba(var(--premium-rgb), 0.09) 0%, transparent 56%);
   }
+}
+
+body.dark-theme .theme-root {
+  background-image:
+    radial-gradient(960px circle at 0% 0%, rgba(var(--accent-rgb), 0.11) 0%, transparent 58%),
+    radial-gradient(860px circle at 100% 14%, rgba(var(--premium-rgb), 0.09) 0%, transparent 56%);
 }
 
 @media (prefers-color-scheme: dark) and (max-width: 640px) {
   .theme-root {
     background-image:
-      radial-gradient(560px circle at 0% 0%, rgba(var(--accent-rgb), 0.16) 0%, transparent 56%),
-      radial-gradient(520px circle at 100% 18%, rgba(var(--premium-rgb), 0.12) 0%, transparent 52%),
-      linear-gradient(180deg, #070d17 0%, #060b13 50%, #050a11 100%);
+      radial-gradient(420px circle at 0% 0%, rgba(var(--accent-rgb), 0.09) 0%, transparent 60%),
+      radial-gradient(380px circle at 100% 16%, rgba(var(--premium-rgb), 0.07) 0%, transparent 58%);
   }
 }
 
+@media (max-width: 640px) {
+  body.dark-theme .theme-root {
+    background-image:
+      radial-gradient(420px circle at 0% 0%, rgba(var(--accent-rgb), 0.09) 0%, transparent 60%),
+      radial-gradient(380px circle at 100% 16%, rgba(var(--premium-rgb), 0.07) 0%, transparent 58%);
+  }
+}
+
+/* ── RTL font override ── */
 [dir='rtl'],
 [dir='rtl'] * {
   font-family: system-ui, -apple-system, sans-serif;
   letter-spacing: 0 !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════════════════ */
 
 @keyframes float-blob {
   0%,
@@ -189,47 +403,64 @@ body {
   }
 }
 
+/* ── Disable animations on mobile ── */
+@media (max-width: 640px) {
+  [style*='fade-up'],
+  [style*='fade-in'],
+  [style*='float-blob'],
+  [style*='float-blob-2'],
+  [style*='ping-ring'] {
+    animation: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILITY COMPONENTS
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Dot grid ── */
 .dot-grid {
   background-image: radial-gradient(circle, var(--grid-dot) 1px, transparent 1px);
   background-size: 40px 40px;
-  opacity: 0.085;
+  opacity: 0.06;
 }
 
 @media (max-width: 640px) {
   .dot-grid {
-    opacity: 0.05;
+    opacity: 0.04;
     background-size: 36px 36px;
   }
 }
 
 @media (prefers-color-scheme: dark) {
   .dot-grid {
-    opacity: 0.18;
+    opacity: 0.12;
   }
 }
 
-.headline-gradient {
-  background: linear-gradient(
-    122deg,
-    var(--accent-strong) 0%,
-    var(--accent) 52%,
-    var(--premium) 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+body.dark-theme .dot-grid {
+  opacity: 0.12;
 }
 
+/* ── Headline gradient ── */
+.headline-gradient {
+  color: var(--accent);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+
+/* ── Glass nav / footer ── */
 .glass-chrome {
   background: var(--bg-elevated);
   border-color: var(--border);
   backdrop-filter: blur(14px);
 }
 
+/* ── Cards ── */
 .surface-card {
   border: 1px solid var(--border);
   background: var(--surface);
-  box-shadow: 0 18px 42px -30px rgba(16, 24, 40, 0.45);
+  box-shadow: var(--shadow-card);
 }
 
 .surface-soft {
@@ -239,32 +470,30 @@ body {
 
 .pro-surface {
   border: 1px solid rgba(var(--accent-rgb), 0.45);
-  background: linear-gradient(
-    155deg,
-    rgba(var(--accent-rgb), 0.16) 0%,
-    rgba(var(--premium-rgb), 0.11) 44%,
-    var(--surface-solid) 100%
-  );
-  box-shadow: 0 20px 52px -32px rgba(var(--accent-rgb), 0.58);
+  background: var(--surface);
+  box-shadow:
+    var(--shadow-card),
+    inset 0 1px 0 rgba(var(--accent-rgb), 0.26);
 }
 
+.cta-surface {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-cta);
+}
+
+/* ── Rule lines ── */
 .rule-line {
   height: 1px;
-  background: linear-gradient(to right, transparent, var(--line), transparent);
+  background: var(--line);
 }
 
-.muted-copy {
-  color: var(--text-muted);
-}
+/* ── Text helpers ── */
+.muted-copy  { color: var(--text-muted); }
+.soft-copy   { color: var(--text-soft); }
+.accent-copy { color: var(--accent); }
 
-.soft-copy {
-  color: var(--text-soft);
-}
-
-.accent-copy {
-  color: var(--accent);
-}
-
+/* ── Email input ── */
 .email-input {
   border: 1px solid var(--border);
   background: var(--surface-solid);
@@ -282,22 +511,26 @@ body {
 
 @media (prefers-color-scheme: dark) {
   .email-input {
-    background: rgba(255, 255, 255, 0.04);
+    background: oklch(1 0 0 / 0.04);
   }
 }
 
+body.dark-theme .email-input {
+  background: oklch(1 0 0 / 0.04);
+}
+
+/* ── Notify button ── */
 .notify-btn {
-  background: linear-gradient(132deg, var(--accent-strong) 0%, var(--accent) 58%, var(--accent-end) 100%);
-  box-shadow: 0 12px 28px -16px rgba(var(--accent-rgb), 0.82);
+  border: 1px solid rgba(var(--accent-rgb), 0.38);
+  background: var(--accent);
+  box-shadow: 0 10px 22px -16px rgba(var(--accent-rgb), 0.64);
   transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
 }
 
 .notify-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  filter: saturate(1.08) brightness(1.04);
-  box-shadow:
-    0 18px 36px -20px rgba(var(--accent-rgb), 0.9),
-    0 0 0 1px rgba(var(--accent-rgb), 0.24);
+  filter: brightness(1.03);
+  box-shadow: 0 14px 24px -18px rgba(var(--accent-rgb), 0.68);
 }
 
 .notify-btn:active:not(:disabled) {
@@ -309,6 +542,7 @@ body {
   outline-offset: 2px;
 }
 
+/* ── Accent link ── */
 .accent-link {
   color: var(--accent);
   text-decoration-color: rgba(var(--accent-rgb), 0.34);
@@ -319,12 +553,30 @@ body {
   text-decoration-color: rgba(var(--accent-rgb), 0.62);
 }
 
-@media (max-width: 640px) {
-  [style*='fade-up'],
-  [style*='fade-in'],
-  [style*='float-blob'],
-  [style*='float-blob-2'],
-  [style*='ping-ring'] {
-    animation: none !important;
-  }
+/* ── Feature icon tones ── */
+.feat-icon-0 { background-color: var(--feat-icon-0-bg); color: var(--feat-icon-0); }
+.feat-icon-1 { background-color: var(--feat-icon-1-bg); color: var(--feat-icon-1); }
+.feat-icon-2 { background-color: var(--feat-icon-2-bg); color: var(--feat-icon-2); }
+.feat-icon-3 { background-color: var(--feat-icon-3-bg); color: var(--feat-icon-3); }
+
+/* ── Watermark ── */
+.watermark-text { color: var(--watermark); }
+
+/* ── On-primary (text on accent-gradient buttons) ── */
+.on-primary { color: var(--on-primary); }
+
+/* ── Theme toggle — focus ring ── */
+.theme-toggle-btn {
+  color: var(--text-muted);
+}
+
+.theme-toggle-btn.is-active {
+  background: var(--surface-solid);
+  color: var(--accent);
+  box-shadow: var(--shadow-toggle);
+}
+
+.theme-toggle-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }

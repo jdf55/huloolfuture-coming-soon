@@ -53,9 +53,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      {/* Sync body.dark-theme with system preference before first paint.
+          Prevents flash of wrong theme. A future toggle will override this. */}
       <body
+        suppressHydrationWarning
         className={`${inter.variable} antialiased`}
       >
+        {/*
+          Reads theme preference from localStorage before first paint.
+          Modes: 'dark' → dark-theme class, 'light' → light-theme class,
+          'system' (default) → mirrors OS preference via prefers-color-scheme.
+          Runs synchronously so there is no flash of wrong theme.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var m=localStorage.getItem('theme')||'system';if(m==='dark'){document.body.classList.add('dark-theme');}else if(m==='light'){document.body.classList.add('light-theme');}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.body.classList.add('dark-theme');}}catch(e){}})();`,
+          }}
+        />
         {children}
       </body>
     </html>

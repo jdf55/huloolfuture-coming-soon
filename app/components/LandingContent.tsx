@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import { ThemeToggle } from './ThemeToggle'
 
 type Lang = 'en' | 'ar'
 
@@ -122,8 +123,7 @@ const t = {
 
 const featureMeta = [
   {
-    bg: 'bg-emerald-50 dark:bg-emerald-500/15',
-    iconColor: 'text-emerald-700 dark:text-emerald-300',
+    toneClass: 'feat-icon-0',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="4" width="18" height="18" rx="2" />
@@ -132,8 +132,7 @@ const featureMeta = [
     ),
   },
   {
-    bg: 'bg-teal-50 dark:bg-teal-500/15',
-    iconColor: 'text-teal-700 dark:text-teal-300',
+    toneClass: 'feat-icon-1',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -141,8 +140,7 @@ const featureMeta = [
     ),
   },
   {
-    bg: 'bg-amber-50 dark:bg-amber-500/15',
-    iconColor: 'text-amber-700 dark:text-amber-300',
+    toneClass: 'feat-icon-2',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="9" />
@@ -151,8 +149,7 @@ const featureMeta = [
     ),
   },
   {
-    bg: 'bg-slate-100 dark:bg-slate-400/15',
-    iconColor: 'text-slate-700 dark:text-slate-200',
+    toneClass: 'feat-icon-3',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="9" />
@@ -217,7 +214,7 @@ export function LandingContent() {
       <button
         type="submit"
         disabled={loading}
-        className="notify-btn h-12 w-full rounded-xl px-7 text-sm font-semibold text-white disabled:opacity-60 disabled:cursor-not-allowed sm:w-auto"
+        className="notify-btn on-primary h-12 w-full rounded-xl px-7 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed sm:w-auto"
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">
@@ -259,17 +256,15 @@ export function LandingContent() {
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         {/* Primary glow — top-left */}
         <div
-          className="absolute -left-20 -top-20 h-[380px] w-[380px] rounded-full blur-[100px] sm:-left-40 sm:-top-40 sm:h-[640px] sm:w-[640px] sm:blur-[120px]"
+          className="absolute -left-24 -top-24 hidden h-[420px] w-[420px] rounded-full blur-[96px] sm:block lg:-left-36 lg:-top-36 lg:h-[560px] lg:w-[560px] lg:blur-[110px]"
           style={{
-            animation: 'float-blob 20s ease-in-out infinite',
             background: 'var(--orb-1)',
           }}
         />
         {/* Secondary glow — bottom-right */}
         <div
-          className="absolute -bottom-32 -right-24 h-[420px] w-[420px] rounded-full blur-[110px] sm:-bottom-56 sm:-right-56 sm:h-[700px] sm:w-[700px] sm:blur-[140px]"
+          className="absolute -bottom-28 -right-24 hidden h-[440px] w-[440px] rounded-full blur-[100px] sm:block lg:-bottom-44 lg:-right-44 lg:h-[600px] lg:w-[600px] lg:blur-[115px]"
           style={{
-            animation: 'float-blob-2 26s ease-in-out infinite',
             background: 'var(--orb-2)',
           }}
         />
@@ -277,7 +272,7 @@ export function LandingContent() {
         <div className="absolute inset-0 dot-grid" />
         {/* Arabic watermark */}
         <div
-          className="absolute right-[-1rem] top-1/2 hidden -translate-y-1/2 select-none text-[22vw] font-black leading-none tracking-tight text-slate-900/[0.03] dark:text-white/[0.03] sm:block"
+          className="watermark-text absolute right-[-1rem] top-1/2 hidden -translate-y-1/2 select-none text-[22vw] font-black leading-none tracking-tight sm:block"
           aria-hidden="true"
         >
           قريباً
@@ -293,7 +288,10 @@ export function LandingContent() {
         style={{ animation: 'fade-in 0.5s ease-out both' }}
       >
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 overflow-hidden rounded-xl ring-1 shadow-sm shadow-black/10" style={{ borderColor: 'var(--border)' }}>
+          <div
+            className="h-9 w-9 overflow-hidden rounded-xl ring-1"
+            style={{ borderColor: 'var(--border)', boxShadow: 'var(--shadow-toggle)' }}
+          >
             <Image
               src="/logo.png"
               alt="HuloolFuture"
@@ -310,17 +308,20 @@ export function LandingContent() {
           </div>
         </div>
 
-        <button
-          onClick={() => setLang(l => (l === 'en' ? 'ar' : 'en'))}
-          className="surface-soft flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium transition-all duration-150 hover:translate-y-[-1px] sm:px-5 sm:text-sm"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          <svg className="h-4 w-4 opacity-60" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <circle cx="8" cy="8" r="6.5" />
-            <path d="M8 1.5a8.5 8.5 0 010 13M8 1.5a8.5 8.5 0 000 13M1.5 8h13" strokeLinecap="round" />
-          </svg>
-          {c.switchLang}
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button
+            onClick={() => setLang(l => (l === 'en' ? 'ar' : 'en'))}
+            className="surface-soft flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium transition-all duration-150 hover:translate-y-[-1px] sm:px-5 sm:text-sm"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            <svg className="h-4 w-4 opacity-60" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <circle cx="8" cy="8" r="6.5" />
+              <path d="M8 1.5a8.5 8.5 0 010 13M8 1.5a8.5 8.5 0 000 13M1.5 8h13" strokeLinecap="round" />
+            </svg>
+            {c.switchLang}
+          </button>
+        </div>
       </nav>
 
       {/* ════════════════════════════════════════════════
@@ -422,7 +423,7 @@ export function LandingContent() {
                 className="surface-card rounded-2xl px-5 py-5 sm:px-6 sm:py-6"
                 style={{ animation: 'fade-up 0.6s ease-out both', animationDelay: `${0.55 + i * 0.07}s` }}
               >
-                <div className={`mb-4 inline-flex h-9 w-9 items-center justify-center rounded-xl ${featureMeta[i].bg} ${featureMeta[i].iconColor}`}>
+                <div className={`mb-4 inline-flex h-9 w-9 items-center justify-center rounded-xl ${featureMeta[i].toneClass}`}>
                   <div className="h-[18px] w-[18px]">{featureMeta[i].icon}</div>
                 </div>
                 <h3 className="mb-1.5 text-[13px] font-semibold" style={{ color: 'var(--text-strong)' }}>{f.title}</h3>
@@ -511,14 +512,10 @@ export function LandingContent() {
       ════════════════════════════════════════════════ */}
       <section className="relative z-10 px-5 pb-16 sm:px-10 sm:pb-24">
         <div
-          className="mx-auto max-w-5xl rounded-2xl px-5 py-10 text-center sm:px-16 sm:py-14"
+          className="cta-surface mx-auto max-w-5xl rounded-2xl px-5 py-10 text-center sm:px-16 sm:py-14"
           style={{
             animation: 'fade-up 0.6s ease-out both',
             animationDelay: '1.0s',
-            border: '1px solid var(--border)',
-            background:
-              'linear-gradient(140deg, rgba(var(--accent-rgb), 0.12) 0%, rgba(var(--premium-rgb), 0.09) 38%, var(--surface) 100%)',
-            boxShadow: '0 20px 46px -32px rgba(16, 24, 40, 0.5)',
           }}
         >
           <p className="accent-copy mb-3 text-[10px] font-bold uppercase tracking-[0.25em]">
