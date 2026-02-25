@@ -53,21 +53,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {/* Sync body.dark-theme with system preference before first paint.
-          Prevents flash of wrong theme. A future toggle will override this. */}
+      {/* Apply saved theme before first paint to prevent flash. */}
       <body
         suppressHydrationWarning
         className={`${inter.variable} antialiased`}
       >
         {/*
-          Reads theme preference from localStorage before first paint.
-          Modes: 'dark' → dark-theme class, 'light' → light-theme class,
-          'system' (default) → mirrors OS preference via prefers-color-scheme.
-          Runs synchronously so there is no flash of wrong theme.
+          Reads saved theme from localStorage before first paint.
+          If no saved preference, falls back to the OS preference.
+          Runs synchronously — no flash of wrong theme.
         */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var m=localStorage.getItem('theme')||'system';if(m==='dark'){document.body.classList.add('dark-theme');}else if(m==='light'){document.body.classList.add('light-theme');}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.body.classList.add('dark-theme');}}catch(e){}})();`,
+            __html: `(function(){try{var m=localStorage.getItem('theme');if(m==='dark'){document.body.classList.add('dark-theme');}else if(m==='light'){document.body.classList.add('light-theme');}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.body.classList.add('dark-theme');}else{document.body.classList.add('light-theme');}}catch(e){}})();`,
           }}
         />
         {children}

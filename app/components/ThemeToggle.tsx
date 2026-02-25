@@ -2,24 +2,15 @@
 
 import { useEffect, useState } from 'react'
 
-type ThemeMode = 'system' | 'light' | 'dark'
+type ThemeMode = 'light' | 'dark'
 
 function applyTheme(mode: ThemeMode): void {
   const body = document.body
   body.classList.remove('light-theme', 'dark-theme')
-  if (mode === 'dark') {
-    body.classList.add('dark-theme')
-  } else if (mode === 'light') {
-    body.classList.add('light-theme')
-  } else {
-    // 'system' — mirror OS preference
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      body.classList.add('dark-theme')
-    }
-  }
+  body.classList.add(mode === 'dark' ? 'dark-theme' : 'light-theme')
 }
 
-/* ── Icons — Feather-style, 24×24 viewBox, rendered at 15×15 ── */
+/* ── Icons ── */
 
 function SunIcon() {
   return (
@@ -36,25 +27,6 @@ function SunIcon() {
     >
       <circle cx="12" cy="12" r="5" />
       <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-    </svg>
-  )
-}
-
-function MonitorIcon() {
-  return (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-      <path d="M8 21h8M12 17v4" />
     </svg>
   )
 }
@@ -77,35 +49,29 @@ function MoonIcon() {
   )
 }
 
-/* ── Options config ── */
-
 const OPTIONS = [
-  { mode: 'light'  as const, label: 'Light',  Icon: SunIcon    },
-  { mode: 'system' as const, label: 'System', Icon: MonitorIcon },
-  { mode: 'dark'   as const, label: 'Dark',   Icon: MoonIcon   },
+  { mode: 'light' as const, label: 'Light', Icon: SunIcon  },
+  { mode: 'dark'  as const, label: 'Dark',  Icon: MoonIcon },
 ]
 
 /* ── Component ── */
 
 export function ThemeToggle() {
-  const [mode, setMode] = useState<ThemeMode>('system')
+  // Default to null until we resolve from localStorage or system preference
+  const [mode, setMode] = useState<ThemeMode | null>(null)
 
-  // Sync active indicator from persisted preference on mount
   useEffect(() => {
-    const saved = localStorage.getItem('theme') as ThemeMode | null
-    if (saved === 'light' || saved === 'dark' || saved === 'system') {
+    const saved = localStorage.getItem('theme')
+    if (saved === 'light' || saved === 'dark') {
       setMode(saved)
+    } else {
+      // No saved preference — detect from system
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      const detected: ThemeMode = prefersDark ? 'dark' : 'light'
+      setMode(detected)
+      // Don't save to localStorage yet — let user explicitly choose
     }
   }, [])
-
-  // While mode = system, re-apply when OS preference changes
-  useEffect(() => {
-    if (mode !== 'system') return
-    const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    const handler = () => applyTheme('system')
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [mode])
 
   function select(next: ThemeMode) {
     setMode(next)
